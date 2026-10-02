@@ -1,0 +1,6 @@
+SAMPLE REPORT - FICTIONAL DATA FOR TESTING ONLY
+Patient: Test Patient   Age: 45   Sex: M
+Test: Glycosylated Haemoglobin (HbA1c)   Result: 6.8 %   Reference range: 4.0 - 5.6 %   Flag: H
+Test: Fasting Plasma Glucose   Result: 128 mg/dL   Reference range: 70 - 99 mg/dL   Flag: H
+Test: Haemoglobin   Result: 13.9 g/dL   Reference range: 13.0 - 17.0 g/dL
+Remarks: Please correlate clinically. Advised follow-up with treating physician.
