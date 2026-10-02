@@ -61,7 +61,13 @@ async def explain_endpoint(
         raise HTTPException(503, str(e))
 
     doc_id = db.save(source, exp.doc_type, raw.strip(), provider.model, exp.model_dump())
-    return {"id": doc_id, "result": exp.model_dump(), "disclaimer": DISCLAIMER}
+    return {
+        "id": doc_id,
+        "result": exp.model_dump(),
+        "disclaimer": DISCLAIMER,
+        "source": source,
+        "extracted_text": raw.strip() if source == "image" else None,
+    }
 
 
 @app.post("/api/documents/{doc_id}/hindi")

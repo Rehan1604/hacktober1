@@ -39,7 +39,7 @@ export default function App() {
     setLoading(true);
     try {
       const r = await explain(file, text);
-      setDoc({ id: r.id, result: r.result, hindi: null, helpful: null, disclaimer: r.disclaimer });
+      setDoc({ id: r.id, result: r.result, hindi: null, helpful: null, disclaimer: r.disclaimer, source: r.source, extracted: r.extracted_text });
       setLang("en");
       setView("result");
       setFile(null);
@@ -88,7 +88,7 @@ export default function App() {
   const openDoc = async (id) => {
     try {
       const d = await getDoc(id);
-      setDoc({ id: d.id, result: d.result, hindi: d.hindi, helpful: d.helpful, disclaimer: d.disclaimer });
+      setDoc({ id: d.id, result: d.result, hindi: d.hindi, helpful: d.helpful, disclaimer: d.disclaimer, source: d.source_type, extracted: d.source_type === "image" ? d.original_text : null });
       setLang("en");
       setView("result");
     } catch (e) {
@@ -145,7 +145,12 @@ export default function App() {
           <button className="primary" disabled={!canSubmit} onClick={submit}>
             {loading ? `Reading… ${elapsed}s` : "Explain it"}
           </button>
-          {loading && <p className="hint">This runs on a laptop without a graphics card, so it takes 30–60 seconds. Please keep this page open.</p>}
+          {loading && (
+            <div className="working" aria-live="polite">
+              <span className="spinner" />
+              <p className="hint">Still working, it has not frozen. {file ? "It reads the photo first, then explains it. " : ""}This runs on a laptop, so it takes about a minute. Please keep this page open.</p>
+            </div>
+          )}
         </main>
       )}
 
@@ -189,7 +194,16 @@ function Result({ doc, lang, setLang, showHindi, hindiLoading, elapsed, rate, re
   const label = hi
     ? { sum: "सारांश", pts: "मुख्य बातें", terms: "शब्दों का मतलब", ask: "अपने डॉक्टर या विशेषज्ञ से पूछें" }
     : { sum: "Summary", pts: "Key points", terms: "Words explained", ask: "Ask your doctor or the issuing office" };
-  const outside = (i) => r.findings && r.findings[i] && r.findings[i].status !== "within";
+  const status = (i) => (r.findings && r.findings[i] ? r.findings[i].status : null);
+  const outside = (i) => status(i) && status(i) !== "within";
+  const badge = (i) => {
+    const s = status(i);
+    if (!s) return null;
+    const t = hi
+      ? { above: "सीमा से ऊपर", below: "सीमा से नीचे", within: "सीमा के अंदर" }
+      : { above: "Above listed range", below: "Below listed range", within: "Within listed range" };
+    return <span className={`badge ${s}`}>{t[s]}</span>;
+  };
 
   return (
     <main>
@@ -200,7 +214,13 @@ function Result({ doc, lang, setLang, showHindi, hindiLoading, elapsed, rate, re
         </button>
       </div>
       {hindiLoading && <p className="hint">Translating on this computer, about 20 seconds.</p>}
-
+      {doc.source === "image" && doc.extracted && (
+        <details className="ocr">
+          <summary>Photos can be misread. Check what was read from your photo</summary>
+          <pre>{doc.extracted}</pre>
+          <p className="hint">Compare these numbers with your paper report. If one looks wrong, retake the photo.</p>
+        </details>
+      )}
       <h2>{label.sum}</h2>
       <p>{summary}</p>
 
@@ -228,6 +248,11 @@ function Result({ doc, lang, setLang, showHindi, hindiLoading, elapsed, rate, re
       )}
 
       <h2>{label.ask}</h2>
+      <p className="hint">
+        {hi
+          ? "ये कोई निदान नहीं हैं। ये ऐसी बातें हैं जिन पर डॉक्टर से बात करना ठीक रहेगा।"
+          : "These are not a diagnosis. They are things worth talking to a doctor about."}
+      </p>
       <ul>
         {asks.map((a, i) => <li key={i}>{a}</li>)}
       </ul>
