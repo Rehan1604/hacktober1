@@ -1,5 +1,5 @@
 const API_BASE =
-  import.meta.env.VITE_API_URL || "";
+  import.meta.env.VITE_API_URL || "https://plain-words.onrender.com";
 
 async function request(url, options) {
   let res;
