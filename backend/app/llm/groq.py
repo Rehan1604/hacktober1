@@ -48,7 +48,7 @@ class GroqProvider(LLMProvider):
 
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
-            payload["reasoning_format"] = "hidden"
+            payload["include_reasoning"] = False
             payload["reasoning_effort"] = "low"
 
         return payload
