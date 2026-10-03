@@ -2,6 +2,7 @@ import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, Form, HTTPException, Response, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app import db
@@ -19,6 +20,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Plain-Words", lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 provider = get_provider()
 llm_lock = asyncio.Lock()  # one CPU model: run one request at a time
 
