@@ -118,6 +118,8 @@ There's also a history with a delete button, and a thumbs up/down on every expla
 
 The report in the screenshot is a fictional one I wrote for testing. No real patient data is in the repo or in this post.
 
+  **Live demo:** https://plain-words.vercel.app (hosted version: the backend runs on Render and calls a model on Groq, so submitted text leaves your device. Use the fictional sample only. Timings and quality notes in this README are from the local version.)
+
 ## How it works
 
 The front end is React and Vite. Behind it is FastAPI, with Tesseract for photos, SQLite for history and a local model through Ollama. Every model call goes through a small `LLMProvider` interface, so changing the model is a one-line edit in `.env`.
